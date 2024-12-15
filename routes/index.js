@@ -1,20 +1,18 @@
-const { Router } = require("express");
-const mongoose = require("mongoose");
-
-const User = mongoose.model("users");
-const Post = mongoose.model("posts");
+const express = require("express");
+const passport = require("passport");
 
 const { ensureAuth, ensureGuest } = require("../middleware/auth");
-const { ensureSignUp, ensureNewUser } = require("../middleware/user");
+const { ensureNewUser, ensureSignUp } = require("../middleware/user");
+const { fetchAllPosts } = require("../middleware/post");
 
-const router = new Router();
+const router = express.Router();
 
 router.get("/", ensureGuest, (req, res) => {
   res.render("login");
 });
 
 router.get("/signup", ensureAuth, ensureNewUser, (req, res) => {
-  res.render("signup");
+  res.render("signup-profile");
 });
 
 router.patch(
@@ -23,9 +21,8 @@ router.patch(
   ensureNewUser,
   async (req, res) => {
     try {
-      const { role } = req.body;
       const user = req.user;
-      user.role = Number(role);
+      user.role = Number(req.body.role);
       await user.save();
       res.status(200).send({});
     } catch (error) {
@@ -37,17 +34,14 @@ router.patch(
   }
 );
 
-router.get("/dashboard", ensureAuth, ensureSignUp, async (req, res) => {
-  try {
-    const posts = await Post.find({});
-
-    res.locals.user = req.user;
-    res.locals.posts = posts;
+router.get(
+  "/dashboard",
+  ensureAuth,
+  ensureSignUp,
+  fetchAllPosts,
+  (req, res) => {
     res.render("dashboard");
-  } catch (error) {
-    console.log(error);
-    res.redirec("/internal-server-error");
   }
-});
+);
 
 module.exports = router;

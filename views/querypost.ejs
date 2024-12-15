@@ -6,7 +6,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-
     <meta name="author" content="Webpixels" />
     <title>Dashboard</title>
     <link rel="icon" href="../cstm-assets/logo.svg" type="image/png" />
@@ -36,11 +35,11 @@
 
   <body>
     <header class="header header-transparent" id="header-main">
-      <!-- Main navbar -->
       <%- include('partials/navbar'); %>
     </header>
 
     <div class="main-content">
+
       <%- include('partials/header'); %>
       <section class="pt-5 pt-lg-0">
         <div class="container">
@@ -48,8 +47,12 @@
             <div class="col-lg-4">
               <%- include('partials/profile'); %>
             </div>
-            <div class="col-lg-8 mt-lg-5" id="post-grid" >
-              <% for(const post of posts) { %>
+            <div class="col-lg-8 mt-lg-5" id="post-grid" >                
+              <% if(queryposts.length === 0) { %>
+              <p>No Posts found.</p>
+              <% } %>
+
+              <% for(const post of queryposts) { %>
               <div
                 class="card mt-4"
                 style="cursor: pointer"

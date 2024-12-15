@@ -11,15 +11,12 @@
       content="Purpose is a unique and beautiful collection of UI elements that are all flexible and modular. A complete and customizable solution to building the website of your dreams."
     />
     <meta name="author" content="Webpixels" />
-    <title>LearnFlow</title>
-    <!-- Favicon -->
+    <title>Learnify</title>
     <link rel="icon" href="/cstm-assets/logo.svg" type="image/png" />
-    <!-- Font Awesome 5 -->
     <link
       rel="stylesheet"
       href="/libs/@fortawesome/fontawesome-free/css/all.min.css"
     />
-    <!-- Purpose CSS -->
     <link rel="stylesheet" href="/css/purpose.css" id="stylesheet" />
     <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
 
@@ -39,13 +36,10 @@
 
   <body>
     <header class="header" id="header-main">
-      <!-- Main navbar -->
       <%- include('partials/navbar'); %>
     </header>
 
     <div class="main-content">
-      <!-- Header (account) -->
-
       <section class="slice slice-lg" data-offset-top="#header-main">
         <div class="container pt-6">
           <div class="row justify-content-center">
@@ -71,9 +65,89 @@
                     >
                     <span class="text-sm text-muted"><%= postDate %></span>
                   </div>
+                  <div>
+                    <a href="#" class="text-muted"></a>
+                      <%= post.views %> <i class="far fa-eye mr-3 fa"></i
+                    ></a>
+
+                    <span id="like-count"><%= post.likes %></span> Likes <%
+                    if(liked) {%>
+                    <a
+                      href="#"
+                      class="action-item action-like active ml-3"
+                      data-toggle="tooltip"
+                      id="likeBtn"
+                      data-original-title="Liked"
+                    >
+                      <i
+                        class="fas fa-thumbs-up"
+                        style="transform: scale(1.5)"
+                      ></i>
+                    </a>
+                    <% } else { %>
+
+                    <a
+                      href="#"
+                      onclick="like(`<%= post._id %>`)"
+                      class="action-item action-like active ml-3"
+                      data-toggle="tooltip"
+                      id="likeBtn"
+                      data-original-title="Like"
+                    >
+                      <i
+                        class="far fa-thumbs-up"
+                        style="transform: scale(1.5)"
+                      ></i>
+                    </a>
+                    <% } %>
+
+
+                  <a
+                      style="cursor: pointer"
+                      data-toggle="tooltip"
+                      data-original-title="Share Link"
+                      class="ml-3"
+                      id="shareBtn"
+                      onclick="share()"
+                    >
+                      <i
+                        class="fas fa-share-square"
+                        style="transform: scale(1.5)"
+                      ></i>
+                    </a>
+                    <% let vin = (user._id).toString() %>
+                    <% if (post.userID === vin) { %>
+                      <a
+                      style="cursor: pointer"
+                      data-toggle="tooltip"
+                      data-original-title="Delete Post"
+                      class="ml-3"
+                      id="deleteBtn"
+                      onclick="deletefunc(`<%= post._id %>`)"
+                    >
+                      <i
+                      class="fas fa-trash"
+                      style="transform: scale(1.5)"
+                      ></i>
+                    </a>
+                    <% } %> 
+                  </div>
                 </div>
               </div>
             </div>
+            <br/>
+            <br/>
+              <video
+              id="my-video"
+              class="video-js"
+              controls
+              preload="auto"
+              data-id="<%= post._id %>"
+              data-setup="{}"
+            >
+              <source src="<%= post.videoKey %>" type="video/mp4" />
+            </video>
+
           </div>
         </div>
       </section>
@@ -82,12 +156,13 @@
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-9">
-              <!-- Article body -->
               <article><%- post.description %></article>
               <hr />
+
+
               <h5 class="mb-4">Comments</h5>
 
-              <% for(const comment of commentList) { %>
+              <% for(const comment of comments) { %>
               <div class="media media-comment">
                 <img
                   alt="Image placeholder"
@@ -162,34 +237,28 @@
       </section>
     </div>
     <%- include('partials/footer') %>
-    <!-- Core JS - includes jquery, bootstrap, popper, in-view and sticky-kit -->
     <script src="/js/purpose.core.js"></script>
-    <!-- Page JS -->
     <script src="/libs/autosize/dist/autosize.min.js"></script>
     <script src="https://vjs.zencdn.net/8.0.4/video.min.js"></script>
-    <!-- Purpose JS -->
     <script src="/js/purpose.js"></script>
-    <!-- Demo JS - remove it when starting your project -->
-    <script src="/js/demo.js"></script>
-
     <script>
       const commentForm = document.querySelector(`.post-<%- post._id %>`);
       commentForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const commentText = commentForm.commentText.value;
-        const postId = `<%- post._id %>`;
+        const postID = `<%- post._id %>`;
         const depth = 1;
-        const parentId = null;
+        const parentID = null;
 
         try {
-          const res = await fetch("/comment/create", {
+          const res = await fetch("/create/comment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               commentText,
-              postId,
+              postID,
               depth,
-              parentId,
+              parentID,
             }),
           });
 
@@ -205,26 +274,24 @@
       });
     </script>
 
+  
     <script>
-      const addReplyBox = (parentId, parentDepth) => {
-        const parentDiv = document.querySelector(`#comment-${parentId}`);
-
+      const addReplyBox = (parentID, parentDepth) => {
+        const parentComment = document.querySelector(`#comment-${parentID}`);
         const replyBox = document.createElement("div");
         replyBox.classList.add("media", "media-comment", "align-items-center");
-
-        const replyButtonFunction =
-          "replyFunction(`" + parentId + "`,`" + parentDepth + "`)";
-
+        let replyButtonFunction =
+          "replyFunction(`" + parentID + "`," + "`" + parentDepth + "`)";
         replyBox.innerHTML = `
-                  <img
+        <img
                     alt="Image placeholder"
                     class="avatar rounded-circle shadow mr-4"
                     src="<%= user.image %>"
                   />
                   <div class="media-body">
                     <form
-                      class="comment-reply-${parentId}"
-                      id="comment-<%= user.username %>-${parentId}-${parentDepth}"
+                      class="comment-reply-${parentID}"
+                      id="comment-<%= user.username %>-${parentID}-${parentDepth}"
 
                     >
                       <div class="form-group mb-0">
@@ -240,8 +307,8 @@
                           <div class="input-group-append">
                             <button
                               class="btn btn-primary"
-                              form="comment-${parentId}"
-                              id="comment-button-${parentId}"
+                              form="comment-${parentID}"
+                              id="comment-button-${parentID}"
                               onclick = "${replyButtonFunction}"
                               type="submit"
                             >
@@ -252,150 +319,194 @@
                       </div>
                     </form>
                   </div>
+
         `;
+        parentComment.appendChild(replyBox);
 
-        parentDiv.appendChild(replyBox);
       };
-
-      const replyFunction = async (parentId, parentDepth) => {
-        const parentForm = document.querySelector(`.comment-reply-${parentId}`);
-        const commentText = parentForm.commentText.value;
-        const postId = `<%- post._id %>`;
+    </script> 
+    <script>
+      const replyFunction = async (parentID, parentDepth) => {
+        const replyForm = document.querySelector(`.comment-reply-${parentID}`);
+        const commentText = replyForm.commentText.value;
+        const postID = `<%= post._id %>`;
         const depth = Number(parentDepth) + 1;
-
         try {
-          const res = await fetch("/comment/create", {
+          const res = await fetch("/create/comment", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               commentText,
-              postId,
+              postID,
               depth,
-              parentId,
+              parentID,
             }),
+            headers: { "Content-Type": "application/json" },
           });
-
+          console.log(res);
           const data = await res.json();
-          const parent = document.querySelector(`#comment-${parentId}`);
-          if (data._id) {
-            const comment = data;
-            // window.location.reload(true);
-            const commentBox = document.createElement("div");
-            commentBox.classList.add("media", "media-comment");
-
-            const loadReplyButtonFunction =
-              "loadReplies(`" + comment.id + "`,`" + depth + "`)";
-            const replyButtonFunction =
-              "addReplyBox(`" + comment.id + "`,`" + depth + "`)";
-
-            commentBox.innerHTML = `
-              <img
-                  alt="Image placeholder"
-                  class="rounded-circle shadow mr-4"
-                  src="${comment.authorImage}"
-                  style="width: 64px; height: 64px"
-                />
-                <div class="media-body" id="comment-${comment._id}">
-                  <div class="media-comment-bubble left-top">
-                    <h6 class="mt-0">${comment.author}</h6>
-                    <p class="text-sm lh-160">${comment.commentText}</p>
-                    <div class="icon-actions">
-                      <button
-                        href="blog-article.html#"
-                        class="btn btn-small"
-                        onclick="${loadReplyButtonFunction}"
-                      >
-                        <i class="fas fa-comment"></i>
-                        <span class="text-muted">View Replies</span>
-                      </button>
-
-                      <button
-                        href="blog-article.html#"
-                        class="btn btn-small"
-                        onclick="${replyButtonFunction}"
-                      >
-                        <i class="fas fa-reply"></i>
-                        <span class="text-muted">Reply</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>`;
-
-            parent.append(commentBox);
-
-            parentForm.parentElement.parentElement.remove();
+          if (data.id) {
+            console.log(data.id);
+            window.location.reload(true);
           } else {
-            alert("Oops something went wrong");
+            throw new Error("Something went wrong");
           }
         } catch (error) {
           console.log(error);
-          alert("Oops, something went wrong");
+          alert("Oops something went wrong !");
         }
       };
+    </script>
 
-      const loadReplies = async (parentId, parentDepth) => {
+     <script>
+      const loadReplies = async (parentID, parentDepth) => {
         try {
           const res = await fetch(
-            `/comment/fetch/reply?parentId=${parentId}&parentDepth=${parentDepth}`,
+            `/fetch/reply?parentID=${parentID}&parentDepth=${parentDepth}`,
             {
               method: "GET",
               headers: { "Content-Type": "application/json" },
             }
           );
           const data = await res.json();
-          if (data.replyList) {
-            const replyList = data.replyList;
-            const parent = document.querySelector(`#comment-${parentId}`);
-            for (var comment of replyList) {
-              const commentBox = document.createElement("div");
-              commentBox.classList.add("media", "media-comment");
+          console.log(data);
+          const parentBody = document.querySelector(`#comment-${parentID}`);
+          for (var comment of data) {
+            const commentBox = document.createElement("div");
+            commentBox.classList.add("media", "media-comment");
+            let replyButtonFunction =
+              "addReplyBox(`" + comment._id + "`," + "`" + comment.depth + "`)";
+            let loadRepliesButtonFunction =
+              "loadReplies(`" + comment._id + "`," + "`" + comment.depth + "`)";
+            commentBox.innerHTML = `<img
+              alt="Image placeholder"
+              class="rounded-circle shadow mr-4"
+              src="${comment.authorImage}"
+              style="width: 64px; height: 64px"
+            />
+            <div class="media-body" id="comment-${comment._id}">
+              <div class="media-comment-bubble left-top">
+                <h6 class="mt-0">${comment.author}</h6>
+                <p class="text-sm lh-160"> ${comment.commentText} </p>
+                <div class="icon-actions">
+                  <button
+                    href="blog-article.html#"
+                    class="btn btn-small"
+                    onclick="${loadRepliesButtonFunction}"
+                  >
+                    <i class="fas fa-comment"></i>
+                    <span class="text-muted">View Replies</span>
+                  </button>
+                  
 
-              const loadReplyButtonFunction =
-                "loadReplies(`" + comment._id + "`,`" + comment.depth + "`)";
-              const replyButtonFunction =
-                "addReplyBox(`" + comment._id + "`,`" + comment.depth + "`)";
+                  <button
+                    href="blog-article.html#"
+                    class="btn btn-small"
+                    onclick="${replyButtonFunction}"
+                  >
+                    <i class="fas fa-reply"></i>
+                    <span class="text-muted">Reply</span>
+                  </button>
+                </div>
+              </div>
+            </div>`;
+            parentBody.appendChild(commentBox);
+          }
+          if (!data.length) {
+            const noReplyBox = document.createElement("div");
+            noReplyBox.classList.add("media-comment-bubble", "left-top");
 
-              commentBox.innerHTML = `
-              <img
-                  alt="Image placeholder"
-                  class="rounded-circle shadow mr-4"
-                  src="${comment.authorImage}"
-                  style="width: 64px; height: 64px"
-                />
-                <div class="media-body" id="comment-${comment._id}">
-                  <div class="media-comment-bubble left-top">
-                    <h6 class="mt-0">${comment.author}</h6>
-                    <p class="text-sm lh-160">${comment.commentText}</p>
-                    <div class="icon-actions">
-                      <button
-                        href="blog-article.html#"
-                        class="btn btn-small"
-                        onclick="${loadReplyButtonFunction}"
-                      >
-                        <i class="fas fa-comment"></i>
-                        <span class="text-muted">View Replies</span>
-                      </button>
-
-                      <button
-                        href="blog-article.html#"
-                        class="btn btn-small"
-                        onclick="${replyButtonFunction}"
-                      >
-                        <i class="fas fa-reply"></i>
-                        <span class="text-muted">Reply</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>`;
-
-              parent.append(commentBox);
-            }
+            noReplyBox.innerHTML = `<p class="text-sm lh-160"> No Reply Yet </p>`;
+            parentBody.appendChild(noReplyBox);
+            setTimeout(() => {
+              parentBody.removeChild(parentBody.lastChild);
+            }, 1500);
           }
         } catch (error) {
           console.log(error);
-          alert("Oops something went wrong");
+          alert("Oops something went wrong!");
         }
       };
-    </script>
+    </script> 
+    <script>
+    const like = async (postID) => {
+        const response = await fetch("/post/like", {
+          method: "PATCH",
+          body: JSON.stringify({
+            id: postID,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+        if (response.status == 200) {
+          const likeBtn = document.querySelector("#likeBtn");
+          const likeCnt = document.querySelector("#like-count");
+          likeCnt.innerHTML = Number(likeCnt.textContent.trim()) + 1;
+          likeBtn.innerHTML = `<i class="fas fa-thumbs-up fa-2x"></i>`;
+        } else {
+          alert("You already liked the post!");
+        }
+      };
+
+    const share = () => {
+
+      navigator.clipboard.writeText(window.location.href);
+      const shareBtn = document.querySelector("#shareBtn");
+      console.log(shareBtn);
+      shareBtn.setAttribute("data-original-title", "Copied to Clipboard");
+      setTimeout(() => {
+        shareBtn.setAttribute("data-original-title", "Share Link");
+      }, 5000);
+    };
+    const deletefunc = async (postID) => {
+      
+        const response = await fetch("/post/delete", {
+          method: "DELETE",
+          body: JSON.stringify({
+            id: postID,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+        console.log("In ejs delete");
+        const data = await response.json();
+        if (response.status == 200) {
+          console.log("Post got deleted");
+          window.location.href = "/dashboard";
+        } else {
+          alert("Oops, Something went wrong!");
+        }
+      };
+  </script>
+
+<script>
+  
+  const myVideo = document.getElementById("my-video");
+  let viewed = JSON.parse("<%= JSON.stringify(viewed) %>");
+  let postID = myVideo.getAttribute("data-id");
+  myVideo.addEventListener("timeupdate", async function () {
+    const playedPercentage = (myVideo.currentTime / myVideo.duration) * 100;
+    if (playedPercentage >= 20) {
+      if (!viewed) {
+        viewed = true;
+
+        const response = await fetch("/post/view", {
+          method: "PATCH",
+          body: JSON.stringify({
+            id: postID,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+        if (response.status == 200) {
+          viewed = true;
+        } else {
+          viewed = false;
+        }
+      }
+    }
+  });
+</script>
+
+
   </body>
 </html>
+

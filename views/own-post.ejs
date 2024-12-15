@@ -36,20 +36,21 @@
 
   <body>
     <header class="header header-transparent" id="header-main">
-      <!-- Main navbar -->
       <%- include('partials/navbar'); %>
     </header>
 
     <div class="main-content">
+      <!-- Header (account) -->
       <%- include('partials/header'); %>
       <section class="pt-5 pt-lg-0">
         <div class="container">
           <div class="row">
             <div class="col-lg-4">
+              <!-- Profile Card -->
               <%- include('partials/profile'); %>
             </div>
-            <div class="col-lg-8 mt-lg-5" id="post-grid" >
-              <% for(const post of posts) { %>
+            <div class="col-lg-8 mt-lg-5" id="post-grid">
+              <% for(const post of ownposts) { %>
               <div
                 class="card mt-4"
                 style="cursor: pointer"

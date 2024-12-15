@@ -11,7 +11,7 @@
       content="Purpose is a unique and beautiful collection of UI elements that are all flexible and modular. A complete and customizable solution to building the website of your dreams."
     />
     <meta name="author" content="Webpixels" />
-    <title>LearnFlow - Create Post</title>
+    <title>Create Post</title>
 
     <link
       rel="stylesheet"
@@ -26,17 +26,13 @@
       src="/richtexteditor/richtexteditor/plugins/all_plugins.js"
     ></script>
 
-    <!-- Favicon -->
     <link rel="icon" href="/cstm-assets/logo.svg" type="image/png" />
-    <!-- Font Awesome 5 -->
     <link
       rel="stylesheet"
       href="/libs/@fortawesome/fontawesome-free/css/all.min.css"
     />
-    <!-- Page CSS -->
     <link rel="stylesheet" href="/libs/flatpickr/dist/flatpickr.min.css" />
     <link rel="stylesheet" href="/libs/select2/dist/css/select2.min.css" />
-    <!-- Purpose CSS -->
     <link rel="stylesheet" href="/css/purpose.css" id="stylesheet" />
 
     <link
@@ -47,21 +43,18 @@
 
   <body>
     <header class="header header-transparent" id="header-main">
-      <!-- Main navbar -->
       <%- include('partials/navbar'); %>
     </header>
+
     <div class="main-content">
-      <!-- Header (account) -->
       <%- include('partials/header'); %>
       <section class="pt-5 pt-lg-0">
         <div class="container">
           <div class="row">
             <div class="col-lg-4">
-              <!-- Profile Card -->
               <%- include('partials/profile'); %>
             </div>
             <div class="col-lg-8 mt-lg-5">
-              <!-- General information form -->
               <div class="actions-toolbar py-2 mb-4">
                 <h5 class="mb-1">Post a new video</h5>
                 <p class="text-sm text-muted mb-0">
@@ -102,6 +95,7 @@
                     </div>
                   </div>
                 </div>
+                
 
                 <!-- Video -->
                 <div class="row">
@@ -139,6 +133,7 @@
                   </div>
                 </div>
 
+                
                 <!-- Description -->
                 <div class="mt-5 delimiter-top">
                   <div class="actions-toolbar py-2 mb-4">
@@ -174,7 +169,7 @@
     <!-- Error Modal -->
 
     <div
-      class="modal modal-danger"
+      class="modal modal-danger fade"
       id="errorModal"
       tabindex="-1"
       role="dialog"
@@ -223,7 +218,7 @@
     <!-- Loading Modal -->
 
     <div
-      class="modal"
+      class="modal fade"
       id="loadingModal"
       tabindex="-1"
       role="dialog"
@@ -249,7 +244,7 @@
               </div>
             </div>
             <div class="py-3 text-center">
-              <p>Your Post is getting uploaded.</p>
+              <p>Your Video is getting uploaded.</p>
               <p class="font-weight-700">
                 Don't reload or close this window, as it might take a few
                 minutes depending upon size of the video...
@@ -262,7 +257,7 @@
 
     <!-- Success Modal -->
     <div
-      class="modal modal-success"
+      class="modal modal-success fade"
       id="successModal"
       tabindex="-1"
       role="dialog"
@@ -306,19 +301,12 @@
       </div>
     </div>
 
-    <!-- Footer-->
     <%- include('partials/footer'); %>
-    <!-- Scripts -->
-    <!-- Core JS - includes jquery, bootstrap, popper, in-view and sticky-kit -->
     <script src="/js/purpose.core.js"></script>
-    <!-- Page JS -->
     <script src="/libs/flatpickr/dist/flatpickr.min.js"></script>
     <script src="/libs/select2/dist/js/select2.min.js"></script>
     <script src="/libs/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
-    <!-- Purpose JS -->
     <script src="/js/purpose.js"></script>
-    <!-- Demo JS - remove it when starting your project -->
-    <script src="/js/demo.js"></script>
     <script
       type="text/javascript"
       src="/richtexteditor/richtexteditor/rte.js"
@@ -334,184 +322,47 @@
   var editor1 = new RichTextEditor("#div_editor1");
 </script>
 
-<!-- <script>
-  const uploadFile = async (file) => {
-    try {
-      const fileName = file.name;
-      const contentType = file.type;
-
-      console.log(file, fileName, contentType);
-      const urlRes = await fetch(
-        `/get/preSignedURL?fileName=${fileName}&contentType=${contentType}`,
-        {
-          method: "GET",
-        }
-      );
-
-      console.log("URL RES", urlRes);
-
-      const data = await urlRes.json();
-
-      console.log("DATA");
-      const url = data.url;
-      const key = data.key;
-
-      console.log(data);
-
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": contentType,
-        },
-        body: file,
-      });
-
-      console.log(response);
-
-      return {
-        response,
-        url,
-        key,
-      };
-    } catch (error) {
-      console.log(error);
-      $("#loadingModal").modal("hide");
-      $("errorModal").modal("show");
-    }
-  };
-  const createPost = async (postObject) => {
-    try {
-      const response = await fetch("/post/create/new", {
-        method: "POST",
-        body: JSON.stringify(postObject),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response;
-    } catch (error) {
-      $("#loadingModal").modal("hide");
-      $("errorModal").modal("show");
-    }
-  };
-</script> -->
-
-<script>
-  const uploadFile = async (file) => {
-    // 1. Get pre-signed url for the file-name file-type
-    // 2. Make a PUT request to that pre-signed with the body = file => Initiate the upload on s3
-
-    try {
-      const urlRes = await fetch(
-        `/upload/presignedUrl?fileName=${file.name}&fileType=${file.type}`,
-        {
-          method: "GET",
-        }
-      );
-
-      const urlData = await urlRes.json();
-
-      const { url, fileName } = urlData;
-
-      const uploadResponse = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-        },
-        body: file,
-      });
-
-      return {
-        uploadResponse,
-        fileName,
-      };
-    } catch (error) {
-      console.log(error);
-      $("#loadingModal").modal("hide");
-      $("#errorModal").modal("show");
-    }
-  };
-</script>
-
-<script>
-  const form = document.querySelector("form");
-  //   const message = document.querySelector("#message");
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    $("#loadingModal").modal("show");
-    $("#successModal").modal("hide");
-    $("#errorModal").modal("hide");
-    // Make sure the file type matches the content-type of your pre-signed URL
-
-    try {
-      const videoThumbnail = document.querySelector("#video-thumbnail");
-
-      let thumbnailUploadResponse, thumbnailKeyName;
-
-      if (videoThumbnail.files.length > 0) {
-        const { uploadResponse, fileName } = await uploadFile(
-          videoThumbnail.files[0]
-        );
-        thumbnailUploadResponse = uploadResponse;
-        thumbnailKeyName = fileName;
-        console.log("THUMBNAIL", uploadResponse, fileName);
-      }
-
-      let videoUploadResponse, videoKeyName;
-
-      const video = document.querySelector("#video");
-      if (video.files.length > 0) {
-        const { uploadResponse, fileName } = await uploadFile(video.files[0]);
-
-        videoUploadResponse = uploadResponse;
-        videoKeyName = fileName;
-        console.log("VIDEO", uploadResponse, fileName);
-      }
-
-      const newPost = {
-        title: form.title.value,
-        subTitle: form.subTitle.value,
-        description: editor1.getHTMLCode(),
-      };
-
-      if (videoUploadResponse.ok) {
-        newPost.video = `https://dt7hj5bw4w6bv.cloudfront.net/${videoKeyName}`;
-      }
-
-      if (thumbnailUploadResponse.ok) {
-        newPost.thumbnail = `https://dt7hj5bw4w6bv.cloudfront.net/${thumbnailKeyName}`;
-      }
-
-      const response = await fetch("/post/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      });
-      const data = await response.json();
-      if (data.id) {
-        $("#loadingModal").modal("hide");
-        $("#successModal").modal("show");
-      } else {
-        $("#loadingModal").modal("hide");
-        $("#errorModal").modal("show");
-      }
-    } catch (error) {
-      console.log(error);
-      $("#loadingModal").modal("hide");
-      $("#errorModal").modal("show");
-    }
-  });
-</script>
-<!-- 
 <script>
   const postForm = document.querySelector("#post-form");
   postForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    $("#loadingModal").modal("show");
+    $("#successModal").modal("hide");
+    $("#errorModal").modal("hide");
     const title = postForm.title.value;
     const subTitle = postForm.subTitle.value;
     const description = editor1.getHTMLCode();
-    console.log(title, description);
+  
+    const thumbnailFile = document.querySelector("#video-thumbnail").files[0];
+    const videoFile = document.querySelector("#video").files[0];
 
-    // Upload the Thumbnail image first
+    const urlResponse = await fetch(
+      `/get/preSignedURL?fileName=${thumbnailFile.name}&contentType=${thumbnailFile.type}`,
+      { method: "GET" }
+    );
+    const urlData = await urlResponse.json(); 
+
+    const uploadResponse = await fetch(urlData.url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": thumbnailFile.type,
+      },
+      body: thumbnailFile,
+    });
+
+    const urlResponse1 = await fetch(
+      `/get/preSignedURL?fileName=${videoFile.name}&contentType=${videoFile.type}`,
+      { method: "GET" }
+    );
+    const urlData1 = await urlResponse1.json();
+
+    const uploadResponse1 = await fetch(urlData1.url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": videoFile.type,
+      },
+      body: videoFile,
+    });
 
     const response = await fetch("/create/post", {
       method: "POST",
@@ -519,6 +370,8 @@
         title,
         subTitle,
         description,
+        thumbnailKey: `<%= process.env.CLOUDFRONT_DDN %>/${urlData.fileName}`,
+        videoKey: `<%= process.env.CLOUDFRONT_DDN %>/${urlData1.fileName}`,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -527,9 +380,13 @@
 
     const data = await response.json();
     if (data._id) {
+      $("#loadingModal").modal("hide");
+      $("#successModal").modal("show");
       window.location.href = "/dashboard";
     } else {
-      alert("Oops, something went wrong !");
+      $("#loadingModal").modal("hide");
+      $("#errorModal").modal("show");
+
     }
   });
-</script> -->
+</script>

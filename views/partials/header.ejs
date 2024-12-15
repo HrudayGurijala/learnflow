@@ -12,11 +12,10 @@
   "
   data-offset-top="#header-main"
 >
-  <!-- Header container -->
+  
   <div class="container pt-4 pt-lg-0">
     <div class="row justify-content-end">
       <div class="col-lg-8">
-        <!-- Salute + Small stats -->
         <div
           class="row align-items-center mb-4 bg-primary"
           style="
@@ -27,6 +26,7 @@
             padding: 20px;
           "
         >
+        
           <div
             class="col-lg-8 col-xl-5 mb-4 mb-md-0"
             style="max-width: 100% !important"
@@ -37,7 +37,14 @@
             <span class="text-white">Have a nice day!</span>
           </div>
         </div>
-        <!-- Account navigation -->
+ 
+        <div>
+          <form action="/search" method="GET">
+            <input type="text" id="searchInput" name="q" placeholder="Enter Post Title" required>
+            <button type="submit">Search</button>
+          </form>
+        </div>
+
         <div class="d-flex">
           <a
             href="/profile"
@@ -60,7 +67,7 @@
             >
               <% if(user.role===0) { %>
               <a
-                href="/post/create"
+                href="/create/post"
                 class="btn btn-icon btn-group-nav shadow btn-neutral"
               >
                 <span class="btn-inner--icon"><i class="fas fa-edit"></i></span>
@@ -68,7 +75,19 @@
                   >Create Post</span
                 >
               </a>
+              <a
+                href="/myown/post"
+                class="btn btn-icon btn-group-nav shadow btn-neutral"
+              >
+                <span class="btn-inner--icon"><i class="fas fa-edit"></i></span>
+                <span class="btn-inner--text d-none d-md-inline-block"
+                  >My Posts</span
+                >
+              </a>
               <% } %>
+            </div>
+            <div>
+              
             </div>
           </div>
         </div>

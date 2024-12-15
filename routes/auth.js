@@ -1,11 +1,10 @@
-const { Router } = require("express");
+const express = require("express");
 const passport = require("passport");
-
-const router = new Router();
+const router = express.Router();
 
 router.get(
   "/google",
-  passport.authenticate("google", {
+  passport.authenticate("google", {  
     scope: ["profile", "email"],
   })
 );
@@ -17,9 +16,7 @@ router.get(
   }),
   (req, res) => {
     const user = req.user;
-    console.log(user, user.role);
-
-    if (!(user.role === 0 || user.role === 1)) {
+    if (user.role !== 0 || user.role !== 1) {
       return res.redirect("/signup");
     }
     res.redirect("/dashboard");

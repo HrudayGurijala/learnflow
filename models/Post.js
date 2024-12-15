@@ -7,23 +7,28 @@ const PostSchema = new mongoose.Schema({
   },
   subTitle: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
-    default: "",
+    required: true,
   },
-  thumbnail: {
+  thumbnailKey: {
     type: String,
-    default: "/img/theme/light/code-2.jpg",
   },
-  video: {
+  videoKey: {
     type: String,
-    default: "",
   },
-  userId: {
+  userID: {
     type: String,
     required: true,
+  },
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  views: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Number,
