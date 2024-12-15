@@ -4,8 +4,8 @@ const GoogleApproach=require('passport-google-oauth20').Strategy;
 const User=mongoose.model('users');
 
 const callbackURL = process.env.NODE_ENV === 'production' ? 
-    'https://learnflow-ibb1.onrender.com/auth/google/callback' : 
-    'https://localhost:10000/auth/google/callback';
+    'https://learnflow-ibb1.onrender.com/auth/google' : 
+    'https://localhost:10000/auth/google';
 
 passport.use(
     new GoogleApproach({
