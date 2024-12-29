@@ -64,4 +64,4 @@ This Node.js web application using EJS template engine which features OAuth 2.0 
 
 ## Contact
 
-For any questions or feedback, feel free to reach out at preethamjayam2004@gmail.com.
+For any questions or feedback, feel free to reach out at gurijalahruday@gmail.com.
